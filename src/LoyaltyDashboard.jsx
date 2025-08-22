@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Star,
   Gift,
@@ -10,9 +10,8 @@ import {
   Award,
   TrendingUp,
 } from "lucide-react";
-import logo from "./assets/goffylogo.webp";
 
-const LoyaltyDashboard = () => {
+const GoofyLoyaltyDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [userPoints, setUserPoints] = useState(1250);
   const [pointsHistory, setPointsHistory] = useState([
@@ -112,6 +111,14 @@ const LoyaltyDashboard = () => {
   const [showAddPoints, setShowAddPoints] = useState(false);
   const [showRemovePoints, setShowRemovePoints] = useState(false);
 
+  // State for Add Points modal
+  const [addPointsForm, setAddPointsForm] = useState({
+    points: "",
+    reason: "",
+    expiry: "",
+    remarks: "",
+  });
+
   const addToCart = (product) => {
     setCart([...cart, product]);
   };
@@ -134,62 +141,36 @@ const LoyaltyDashboard = () => {
     return Math.min(maxRedeemable, userPoints);
   };
 
-  // Add missing state for Remove Points modal
-  const [removePointsForm, setRemovePointsForm] = useState({
-    points: "",
-    reason: "",
-    remarks: "",
-  });
-
-  // Handler for removing points
-  const handleRemovePoints = () => {
-    if (!removePointsForm.points || !removePointsForm.reason) return;
-    const pointsToRemove = parseInt(removePointsForm.points);
-    if (pointsToRemove > userPoints || pointsToRemove <= 0) return;
+  // Handler for adding points
+  const handleAddPoints = (e) => {
+    e.preventDefault();
+    const points = parseInt(addPointsForm.points);
+    const reason = addPointsForm.reason;
+    const expiry = addPointsForm.expiry;
+    const remarks = addPointsForm.remarks;
+    if (!points || !reason || !expiry) return;
     const newTransaction = {
       id: Date.now(),
-      type: "redeemed",
-      points: -pointsToRemove,
-      reason: removePointsForm.reason,
+      type: "earned",
+      points,
+      reason,
       date: new Date().toISOString().slice(0, 10),
-      expiry: null,
-      remarks: removePointsForm.remarks,
+      expiry,
+      remarks,
     };
     setPointsHistory([newTransaction, ...pointsHistory]);
-    setUserPoints((prev) => prev - pointsToRemove);
-    setRemovePointsForm({ points: "", reason: "", remarks: "" });
-    setShowRemovePoints(false);
+    setUserPoints((prev) => prev + points);
+    setAddPointsForm({ points: "", reason: "", expiry: "", remarks: "" });
+    setShowAddPoints(false);
   };
 
-  // Fixed Add Points Modal implementation
+  // Add Points Modal
   const AddPointsModal = () =>
     showAddPoints && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl p-6 w-96 mx-4">
           <h3 className="text-xl font-bold mb-4 text-green-600">Add Points</h3>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = e.target;
-              const points = parseInt(form.points.value);
-              const reason = form.reason.value;
-              const expiry = form.expiry.value;
-              const remarks = form.remarks.value;
-              if (!points || !reason || !expiry) return;
-              const newTransaction = {
-                id: Date.now(),
-                type: "earned",
-                points,
-                reason,
-                date: new Date().toISOString().slice(0, 10),
-                expiry,
-                remarks,
-              };
-              setPointsHistory([newTransaction, ...pointsHistory]);
-              setUserPoints((prev) => prev + points);
-              setShowAddPoints(false);
-            }}
-          >
+          <form onSubmit={handleAddPoints}>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
@@ -200,6 +181,13 @@ const LoyaltyDashboard = () => {
                   type="number"
                   required
                   className="w-full p-2 border rounded-lg"
+                  value={addPointsForm.points}
+                  onChange={(e) =>
+                    setAddPointsForm({
+                      ...addPointsForm,
+                      points: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div>
@@ -212,6 +200,13 @@ const LoyaltyDashboard = () => {
                   required
                   className="w-full p-2 border rounded-lg"
                   placeholder="e.g., Product Purchase"
+                  value={addPointsForm.reason}
+                  onChange={(e) =>
+                    setAddPointsForm({
+                      ...addPointsForm,
+                      reason: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div>
@@ -223,6 +218,13 @@ const LoyaltyDashboard = () => {
                   type="date"
                   required
                   className="w-full p-2 border rounded-lg"
+                  value={addPointsForm.expiry}
+                  onChange={(e) =>
+                    setAddPointsForm({
+                      ...addPointsForm,
+                      expiry: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div>
@@ -233,6 +235,13 @@ const LoyaltyDashboard = () => {
                   name="remarks"
                   className="w-full p-2 border rounded-lg"
                   placeholder="Additional notes..."
+                  value={addPointsForm.remarks}
+                  onChange={(e) =>
+                    setAddPointsForm({
+                      ...addPointsForm,
+                      remarks: e.target.value,
+                    })
+                  }
                 ></textarea>
               </div>
             </div>
@@ -336,8 +345,11 @@ const LoyaltyDashboard = () => {
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className=" w-40"><img src={logo} alt="" /></div>
-             
+              <div className="text-4xl">🤡</div>
+              <div>
+                <h1 className="text-3xl font-bold text-purple-600">Goofy</h1>
+                <p className="text-gray-600">Kids Toys & Clothing Store</p>
+              </div>
             </div>
             <div className="flex items-center gap-4 bg-purple-100 px-6 py-3 rounded-full">
               <Star className="text-yellow-500 fill-current" size={24} />
@@ -573,44 +585,46 @@ const LoyaltyDashboard = () => {
               <h2 className="text-2xl font-bold text-gray-800 mb-6">
                 Featured Products
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-4">
                 {products.map((product) => (
                   <div
                     key={product.id}
-                    className="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 transition-all"
+                    className="flex items-center justify-between p-4 border-2 border-gray-100 rounded-lg hover:border-purple-200 transition-all"
                   >
-                    <div className="text-6xl text-center mb-4">
-                      {product.image}
-                    </div>
-                    <h3 className="font-bold text-gray-800 mb-2">
-                      {product.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {product.category}
-                    </p>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-xl font-bold text-green-600">
-                        ₹{product.price}
-                      </span>
-                      <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full">
-                        <Star
-                          className="text-yellow-500 fill-current"
-                          size={14}
-                        />
-                        <span className="text-sm font-bold text-yellow-600">
-                          {product.points}
-                        </span>
+                    <div className="flex items-center gap-4">
+                      <div className="text-3xl">{product.image}</div>
+                      <div>
+                        <h3 className="font-bold text-gray-800">
+                          {product.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {product.category}
+                        </p>
+                        <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full mt-1 w-fit">
+                          <Star
+                            className="text-yellow-500 fill-current"
+                            size={12}
+                          />
+                          <span className="text-xs font-bold text-yellow-600">
+                            {product.points} Points Cashback
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 transition-colors"
-                    >
-                      Add to Cart
-                    </button>
-                    <p className="text-center text-sm text-green-600 mt-2 font-medium">
-                      {product.points} Points Cashback!
-                    </p>
+                    <div className="text-right flex flex-col gap-2">
+                      <p className="font-bold text-green-600 text-lg">
+                        ₹{product.price}
+                      </p>
+                      <p className="text-sm text-purple-600 font-medium">
+                        Earn {product.points} pts
+                      </p>
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -922,4 +936,4 @@ const LoyaltyDashboard = () => {
   );
 };
 
-export default LoyaltyDashboard;
+export default GoofyLoyaltyDashboard;
