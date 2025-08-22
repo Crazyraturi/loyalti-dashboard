@@ -582,51 +582,149 @@ const GoofyLoyaltyDashboard = () => {
         {activeTab === "products" && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-green-200">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                Featured Products
-              </h2>
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="flex items-center justify-between p-4 border-2 border-gray-100 rounded-lg hover:border-purple-200 transition-all"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-3xl">{product.image}</div>
-                      <div>
-                        <h3 className="font-bold text-gray-800">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {product.category}
-                        </p>
-                        <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full mt-1 w-fit">
-                          <Star
-                            className="text-yellow-500 fill-current"
-                            size={12}
-                          />
-                          <span className="text-xs font-bold text-yellow-600">
-                            {product.points} Points Cashback
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right flex flex-col gap-2">
-                      <p className="font-bold text-green-600 text-lg">
-                        ₹{product.price}
-                      </p>
-                      <p className="text-sm text-purple-600 font-medium">
-                        Earn {product.points} pts
-                      </p>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors text-sm"
+              {/* Header Section */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Product Catalog
+                </h2>
+                <div className="flex items-center gap-4">
+                  <button className="bg-pink-400 hover:bg-pink-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Add New Toy
+                  </button>
+                  <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option>All Promotions</option>
+                    <option>Featured</option>
+                    <option>Sale Items</option>
+                  </select>
+                  <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option>All Time</option>
+                    <option>This Week</option>
+                    <option>This Month</option>
+                  </select>
+                  <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option>All Categories</option>
+                    <option>Toys</option>
+                    <option>Clothing</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        SR NO.
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        PRODUCT ID
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        TOY DETAILS
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        CATEGORY
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        STOCK
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        PRICE
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        POINTS
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        STATUS
+                      </th>
+                      <th className="text-left py-4 px-4 font-semibold text-gray-700 text-sm">
+                        ACTION
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product, index) => (
+                      <tr
+                        key={product.id}
+                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                       >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                        <td className="py-4 px-4 text-sm text-gray-700">
+                          {index + 1}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-blue-600 font-medium">
+                          toy-{String(product.id).padStart(3, "0")}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-lg">
+                              {product.image}
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-800 text-sm">
+                                {product.name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                ID: toy-{String(product.id).padStart(3, "0")}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-gray-700">
+                          {product.category}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-gray-700">
+                          {Math.floor(Math.random() * 50) + 10}
+                        </td>
+                        <td className="py-4 px-4 text-sm font-semibold text-gray-800">
+                          ₹ {product.price}.00
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full w-fit">
+                            <Star
+                              className="text-yellow-500 fill-current"
+                              size={12}
+                            />
+                            <span className="text-xs font-bold text-yellow-600">
+                              {product.points}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                            In Stock
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => addToCart(product)}
+                              className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                            >
+                              Add to Cart
+                            </button>
+                            <button className="text-gray-400 hover:text-gray-600">
+                              <span className="text-lg">⋮</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              <div className="flex items-center justify-end gap-2 mt-6">
+                <button className="px-3 py-2 text-sm text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                  Previous
+                </button>
+                <button className="px-3 py-2 text-sm bg-yellow-400 text-white rounded-lg font-medium">
+                  1
+                </button>
+                <button className="px-3 py-2 text-sm text-gray-500 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                  Next
+                </button>
               </div>
             </div>
           </div>
