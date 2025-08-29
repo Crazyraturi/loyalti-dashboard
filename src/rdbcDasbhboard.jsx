@@ -599,6 +599,86 @@ const AdminDashboard = () => {
     </div>
   );
 
+  // Add state for assign role modal
+  
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [selectedRoleName, setSelectedRoleName] = useState("");
+
+  // Make employees state mutable
+  const [employeeList, setEmployeeList] = useState(employees);
+
+  // Assign Role Modal
+  const AssignRoleModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <h2 className="text-xl font-bold mb-4">Assign Role</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Select User
+            </label>
+            <select
+              value={selectedUserId}
+              onChange={(e) => setSelectedUserId(e.target.value)}
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Choose user</option>
+              {employeeList.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.email})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Select Role
+            </label>
+            <select
+              value={selectedRoleName}
+              onChange={(e) => setSelectedRoleName(e.target.value)}
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Choose role</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.name}>
+                  {role.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="mt-6 flex justify-end space-x-3">
+          <button
+            onClick={() => setShowAssignRole(false)}
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              if (!selectedUserId || !selectedRoleName) return;
+              setEmployeeList(
+                employeeList.map((emp) =>
+                  emp.id === parseInt(selectedUserId)
+                    ? { ...emp, role: selectedRoleName }
+                    : emp
+                )
+              );
+              setShowAssignRole(false);
+              setSelectedUserId("");
+              setSelectedRoleName("");
+            }}
+            className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+          >
+            Assign
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Update UserManagement to use employeeList and showAssignRole
   const UserManagement = () => (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -650,7 +730,7 @@ const AdminDashboard = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {employees.map((employee) => (
+            {employeeList.map((employee) => (
               <tr key={employee.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="flex items-center space-x-3">
@@ -698,6 +778,7 @@ const AdminDashboard = () => {
           </tbody>
         </table>
       </div>
+      {showAssignRole && <AssignRoleModal />}
     </div>
   );
 
