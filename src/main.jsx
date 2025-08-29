@@ -9,6 +9,7 @@ import UserManagement from "./UserManagementDashboard";
 import Home from "./Home";
 import AdminDashboard from "./rdbcDasbhboard";
 import AdminNotificationDashboard from "./notificationDashboard";
+import ReviewManagementDashboard from "../reviewDashboard";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/loyalty" element={<LoyaltyDashboard />} />
         <Route path="/RDBC" element={<AdminDashboard />} />
         <Route path="/notification" element={<AdminNotificationDashboard />} />
+        <Route path="/reviewDashboard" element={<ReviewManagementDashboard />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
