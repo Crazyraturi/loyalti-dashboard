@@ -600,7 +600,7 @@ const AdminDashboard = () => {
   );
 
   // Add state for assign role modal
-  
+
   const [selectedUserId, setSelectedUserId] = useState("");
   const [selectedRoleName, setSelectedRoleName] = useState("");
 
