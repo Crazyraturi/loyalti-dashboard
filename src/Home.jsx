@@ -12,6 +12,14 @@ const Home = () => {
         {" "}
         user Management Dashboard
       </Link>
+      <Link className="p-4 bg-pink-600 rounded-full" to="/RDBC">
+        {" "}
+        RDBC Dashboard
+      </Link>
+      <Link className="p-4 bg-green-600 rounded-full" to="/notification">
+        {" "}
+        notification Dashboard
+      </Link>
     </div>
   );
 }
