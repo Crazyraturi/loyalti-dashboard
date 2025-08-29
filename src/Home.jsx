@@ -8,7 +8,7 @@ const Home = () => {
         {" "}
         Loyalty Dashboard
       </Link>
-      <Link className="p-4 bg-amber-400 rounded-full" to="/userManagement">
+      <Link className="p-4 bg-blue-400 rounded-full" to="/userManagement">
         {" "}
         user Management Dashboard
       </Link>
@@ -23,6 +23,13 @@ const Home = () => {
       <Link className="p-4 bg-red-400 rounded-full" to="/reviewDashboard">
         {" "}
         review Dashboard
+      </Link>
+      <Link
+        className="p-4 bg-purple-400 rounded-full"
+        to="/ActivityLogDashboard"
+      >
+        {" "}
+        Activity Log Dashboard
       </Link>
     </div>
   );
