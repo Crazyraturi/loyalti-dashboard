@@ -290,18 +290,7 @@ const AdminDashboard = () => {
         </nav>
       </div>
 
-      <div className="absolute bottom-4 left-4 right-4">
-        <div className="flex items-center space-x-3 p-3 bg-red-700 rounded-lg">
-          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-red-500 font-bold text-sm">
-            SA
-          </div>
-          <div className="flex-1">
-            <div className="text-sm font-medium">Super Admin</div>
-            <div className="text-xs text-red-200">admin@company.com</div>
-          </div>
-          <LogOut size={16} className="cursor-pointer hover:text-red-200" />
-        </div>
-      </div>
+      
     </div>
   );
 
@@ -457,50 +446,71 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const RoleManagement = () => (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search roles..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+const RoleManagement = () => (
+  <div className="p-6">
+    <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center space-x-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search roles..."
+            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-
-        <button
-          onClick={() => setShowCreateRole(true)}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center space-x-2"
-        >
-          <Plus size={16} />
-          <span>Create Role</span>
-        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {roles
-          .filter((role) =>
-            role.name.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .map((role) => (
-            <div
-              key={role.id}
-              className="bg-white rounded-lg shadow border hover:shadow-lg transition-shadow"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-4 h-4 rounded-full ${role.color}`}></div>
-                    <h3 className="text-lg font-semibold">{role.name}</h3>
-                    {role.requires2FA && (
-                      <Lock className="w-4 h-4 text-orange-500" />
-                    )}
-                  </div>
+      <button
+        onClick={() => setShowCreateRole(true)}
+        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center space-x-2"
+      >
+        <Plus size={16} />
+        <span>Create Role</span>
+      </button>
+    </div>
+
+    {/* Table instead of cards */}
+    <div className="bg-white rounded-lg shadow border overflow-hidden">
+      <table className="w-full">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="text-left px-6 py-3 font-medium text-gray-900">
+              Role Name
+            </th>
+            <th className="text-left px-6 py-3 font-medium text-gray-900">
+              Type
+            </th>
+            <th className="text-left px-6 py-3 font-medium text-gray-900">
+              Users Assigned
+            </th>
+            <th className="text-left px-6 py-3 font-medium text-gray-900">
+              2FA
+            </th>
+            <th className="text-left px-6 py-3 font-medium text-gray-900">
+              Key Permissions
+            </th>
+            <th className="text-left px-6 py-3 font-medium text-gray-900">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {roles
+            .filter((role) =>
+              role.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            .map((role) => (
+              <tr key={role.id} className="hover:bg-gray-50">
+                {/* Role Name */}
+                <td className="px-6 py-4 flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${role.color}`} />
+                  <span className="font-medium text-gray-900">{role.name}</span>
+                </td>
+
+                {/* Type */}
+                <td className="px-6 py-4">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       role.type === "predefined"
@@ -510,58 +520,72 @@ const AdminDashboard = () => {
                   >
                     {role.type}
                   </span>
-                </div>
+                </td>
 
-                <p className="text-gray-600 mb-4">
-                  {role.users} users assigned
-                </p>
+                {/* Users */}
+                <td className="px-6 py-4 text-gray-700">{role.users}</td>
 
-                <div className="space-y-2 mb-4">
-                  {Object.entries(role.permissions)
-                    .slice(0, 4)
-                    .map(([module, permission]) => (
-                      <div
-                        key={module}
-                        className="flex justify-between items-center"
-                      >
-                        <span className="text-sm text-gray-600 capitalize">
-                          {module}:
-                        </span>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${getPermissionColor(
-                            permission
-                          )}`}
-                        >
-                          {getPermissionLevel(permission)}
-                        </span>
-                      </div>
-                    ))}
-                  {Object.keys(role.permissions).length > 4 && (
-                    <p className="text-xs text-gray-500 text-center">
-                      +{Object.keys(role.permissions).length - 4} more modules
-                    </p>
+                {/* 2FA */}
+                <td className="px-6 py-4">
+                  {role.requires2FA ? (
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                  ) : (
+                    <span className="text-gray-400">-</span>
                   )}
-                </div>
+                </td>
 
-                <div className="flex space-x-2">
+                {/* Permissions */}
+                <td className="px-6 py-4">
+                  <div className="space-y-1">
+                    {Object.entries(role.permissions)
+                      .slice(0, 3)
+                      .map(([module, permission]) => (
+                        <div
+                          key={module}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="text-sm text-gray-600 capitalize">
+                            {module}
+                          </span>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${getPermissionColor(
+                              permission
+                            )}`}
+                          >
+                            {getPermissionLevel(permission)}
+                          </span>
+                        </div>
+                      ))}
+                    {Object.keys(role.permissions).length > 3 && (
+                      <p className="text-xs text-gray-500">
+                        +{Object.keys(role.permissions).length - 3} more
+                      </p>
+                    )}
+                  </div>
+                </td>
+
+                {/* Actions */}
+                <td className="px-6 py-4 flex space-x-2">
                   <button
                     onClick={() => setSelectedRole(role)}
-                    className="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 flex items-center justify-center space-x-1"
+                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-1"
                   >
                     <Eye size={14} />
                     <span>View</span>
                   </button>
-                  <button className="flex-1 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 flex items-center justify-center space-x-1">
+                  <button className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center space-x-1">
                     <Edit size={14} />
                     <span>Edit</span>
                   </button>
-                </div>
-              </div>
-            </div>
-          ))}
-      </div>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
     </div>
-  );
+  </div>
+);
+
 
   const UserManagement = () => (
     <div className="p-6">
@@ -817,6 +841,93 @@ const AdminDashboard = () => {
     </div>
   );
 
+
+  const CreateRoleModal = () => {
+    const [roleName, setRoleName] = useState("");
+    const [requires2FA, setRequires2FA] = useState(false);
+
+    const handleCreateRole = () => {
+      if (!roleName.trim()) return;
+
+      const newRole = {
+        id: roles.length + 1,
+        name: roleName,
+        type: "custom",
+        users: 0,
+        permissions: {
+          dashboard: "view",
+          orders: "none",
+          inventory: "none",
+          marketing: "none",
+          reports: "none",
+          finance: "none",
+          users: "none",
+          settings: "none",
+        },
+        requires2FA,
+        color: "bg-gray-500",
+      };
+
+      setRoles([...roles, newRole]); // add role
+      setShowCreateRole(false); // close modal
+      setRoleName(""); // reset
+      setRequires2FA(false);
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+          <h2 className="text-xl font-bold mb-4">Create New Role</h2>
+
+          <div className="space-y-4">
+            {/* Role Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Role Name
+              </label>
+              <input
+                type="text"
+                value={roleName}
+                onChange={(e) => setRoleName(e.target.value)}
+                placeholder="Enter role name"
+                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+
+            {/* 2FA */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">
+                Require 2FA
+              </span>
+              <input
+                type="checkbox"
+                checked={requires2FA}
+                onChange={(e) => setRequires2FA(e.target.checked)}
+                className="w-4 h-4 text-red-500"
+              />
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={() => setShowCreateRole(false)}
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreateRole}
+              className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+            >
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Main render
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -829,6 +940,7 @@ const AdminDashboard = () => {
           {activeTab === "users" && <UserManagement />}
           {activeTab === "audit" && <AuditLogs />}
           {activeTab === "security" && <SecuritySettings />}
+          {showCreateRole && <CreateRoleModal />}
         </div>
       </div>
     </div>

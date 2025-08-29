@@ -9,15 +9,15 @@ import {
   Edit,
   Trash2,
   Eye,
-  
   Users,
   Smartphone,
   Globe,
   MessageCircle,
 } from "lucide-react";
 
-
 const AdminNotificationDashboard = () => {
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+
   const [activeTab, setActiveTab] = useState("templates");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [templates, setTemplates] = useState([
@@ -347,7 +347,18 @@ const AdminNotificationDashboard = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <input type="checkbox" />
+                  <button
+                    onClick={() => toggleTrigger(trigger.id)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      trigger.enabled ? "bg-green-600" : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        trigger.enabled ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-600">
                   {trigger.lastUsed}
@@ -374,7 +385,10 @@ const AdminNotificationDashboard = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Campaign Scheduler</h1>
-        <button className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-red-600">
+        <button
+          onClick={() => setShowScheduleModal(true)} // 👈 open modal
+          className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center hover:bg-red-600"
+        >
           <Calendar size={16} className="mr-2" />
           Schedule Campaign
         </button>
@@ -385,7 +399,7 @@ const AdminNotificationDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-2xl font-bold text-blue-600">24</div>
-              <div className="text-sm text-blue-600 mt-1">Active Campaigns</div>
+              <div className="text-sm text-blue-600">Active Campaigns</div>
             </div>
             <Calendar className="text-blue-400" size={24} />
           </div>
@@ -394,9 +408,7 @@ const AdminNotificationDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-2xl font-bold text-yellow-600">8</div>
-              <div className="text-sm text-yellow-600 mt-1">
-                Pending Campaigns
-              </div>
+              <div className="text-sm text-yellow-600">Pending Campaigns</div>
             </div>
             <Bell className="text-yellow-400" size={24} />
           </div>
@@ -405,9 +417,7 @@ const AdminNotificationDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-2xl font-bold text-green-600">156</div>
-              <div className="text-sm text-green-600 mt-1">
-                Completed This Month
-              </div>
+              <div className="text-sm text-green-600">Completed This Month</div>
             </div>
             <Send className="text-green-400" size={24} />
           </div>
@@ -795,11 +805,34 @@ const AdminNotificationDashboard = () => {
             <div className="flex justify-end space-x-3 pt-4">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </button>
-              <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+              <button
+                onClick={() => {
+                  const newTemplate = {
+                    id: templates.length + 1,
+                    title: formData.title,
+                    trigger: formData.trigger,
+                    platform: formData.platform,
+                    status: "Active",
+                    created: new Date().toISOString().split("T")[0],
+                  };
+                  setTemplates([...templates, newTemplate]);
+                  setShowCreateModal(false);
+                  setFormData({
+                    title: "",
+                    text: "",
+                    webUrl: "",
+                    appUrl: "",
+                    whatsappUrl: "",
+                    trigger: "",
+                    platform: "Both",
+                  });
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
                 Create Template
               </button>
             </div>
@@ -808,20 +841,190 @@ const AdminNotificationDashboard = () => {
       </div>
     );
   };
+  const ScheduleCampaignModal = () => {
+    const [formData, setFormData] = useState({
+      name: "",
+      type: "Scheduled",
+      date: "",
+      time: "",
+      frequency: "Daily",
+      platform: "Both",
+    });
 
-  // Main render
+    if (!showScheduleModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">
+              Schedule Campaign
+            </h2>
+            <button
+              onClick={() => setShowScheduleModal(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            {/* Campaign Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Campaign Name
+              </label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="Enter campaign name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+
+            {/* Type Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Campaign Type
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                value={formData.type}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
+              >
+                <option value="Scheduled">Scheduled</option>
+                <option value="Recurring">Recurring</option>
+              </select>
+            </div>
+
+            {/* Date & Time (only if scheduled) */}
+            {formData.type === "Scheduled" && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    value={formData.date}
+                    onChange={(e) =>
+                      setFormData({ ...formData, date: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Time
+                  </label>
+                  <input
+                    type="time"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    value={formData.time}
+                    onChange={(e) =>
+                      setFormData({ ...formData, time: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Frequency (only if recurring) */}
+            {formData.type === "Recurring" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Frequency
+                </label>
+                <select
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  value={formData.frequency}
+                  onChange={(e) =>
+                    setFormData({ ...formData, frequency: e.target.value })
+                  }
+                >
+                  <option>Daily</option>
+                  <option>Weekly</option>
+                  <option>Monthly</option>
+                </select>
+              </div>
+            )}
+
+            {/* Platform */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Platform
+              </label>
+              <div className="flex space-x-4 pt-2">
+                {["Web", "App", "Both"].map((platform) => (
+                  <label key={platform} className="flex items-center">
+                    <input
+                      type="radio"
+                      name="platform"
+                      value={platform}
+                      checked={formData.platform === platform}
+                      onChange={(e) =>
+                        setFormData({ ...formData, platform: e.target.value })
+                      }
+                      className="mr-2"
+                    />
+                    <span className="text-sm">{platform}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end space-x-3 pt-4">
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const newCampaign = {
+                    id: campaigns.length + 1,
+                    name: formData.name,
+                    type: formData.type,
+                    date: formData.date,
+                    time: formData.time,
+                    frequency: formData.frequency,
+                    platform: formData.platform,
+                    status: "Pending",
+                  };
+                  setCampaigns([...campaigns, newCampaign]);
+                  setShowScheduleModal(false);
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                Schedule
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-100">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <TabNavigation />
         <div className="flex-1 overflow-y-auto">
           {activeTab === "templates" && <TemplatesTab />}
           {activeTab === "triggers" && <TriggersTab />}
           {activeTab === "scheduler" && <SchedulerTab />}
           {activeTab === "analytics" && <AnalyticsTab />}
+          <CreateTemplateModal />
+          <ScheduleCampaignModal />
         </div>
-        <CreateTemplateModal />
       </div>
     </div>
   );
